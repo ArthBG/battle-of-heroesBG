@@ -228,3 +228,5 @@ Esta função realiza uma batalha entre dois vilões com base em seus atributos.
 
 <img width="777" alt="dcvillains" src="https://github.com/ArthBG/villainsBG/assets/123407087/0954f8d0-85e8-47c6-a418-ff3fda4031d5">
 
+## Desenvolvido por [Arthur Borges](https://github.com/ArthBG)
+
