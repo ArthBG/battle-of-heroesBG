@@ -84,3 +84,33 @@ app.post('/villains', async (req, res) => {
 }
 );
 
+app.put('/villains/:id', async (req, res) => {
+    const { id } = req.params;
+    let { name, power, damage, level, hp } = req.body;
+    name = name.toLowerCase();
+    power = power.toLowerCase();
+    const query = 'UPDATE villains SET name = $1, power = $2, damage = $3, level = $4, hp = $5 WHERE id = $6';
+    const values = [name, power, damage, level, hp, id];
+
+    try {
+        if (!name || !power || !damage || !level || !hp) {
+            res.status(400).json({ error: 'Please provide all the fields' });
+        } 
+        if (damage < 0 || level < 0 || hp < 0) {
+            res.status(400).json({ error: 'Please provide positive values for damage, level and hp' });
+        }
+        if (typeof name !== 'string' || typeof power !== 'string') {
+            res.status(400).json({ error: 'Please provide a string for name and power' });
+        }
+        if (typeof damage !== 'number' || typeof level !== 'number' || typeof hp !== 'number') {
+            res.status(400).json({ error: 'Please provide a number for damage, level and hp' });
+        } else {
+            const result = await pool.query(query, values);
+            res.status(200).json({ message: 'Villain updated successfully', villain: result.rows[0] });
+        }
+    } catch (error) {
+        console.error("Cannot update this villain", error);
+        res.status(500).json({ error: error.message });
+    }
+}
+);
