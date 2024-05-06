@@ -236,10 +236,16 @@ app.post('/battles', async (req, res) => {
 });
 
 
-
+// get the historic of the battles and the wins and losses of each villain
 app.get('/battles', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM battles');
+        const result = await pool.query(
+            `
+            SELECT battles.id, battles.villain1_id, battles.villain2_id, battles.winner_id, battles.loser_id, villains.name AS winner, villains2.name AS loser,
+            villains.level AS winner_level, villains2.level AS loser_level, villains.damage AS winner_damage, villains2.damage AS loser_damage, villains.hp AS winner_hp, villains2.hp AS loser_hp
+            FROM battles INNER JOIN villains ON battles.winner_id = villains.id INNER JOIN villains AS villains2 ON battles.loser_id = villains2.id
+            `
+        );
         res.status(200).json({
             total: result.rowCount,
             battles: result.rows,
@@ -248,22 +254,8 @@ app.get('/battles', async (req, res) => {
         console.error("Cannot get battles", error);
         res.status(500).json({ error: error.message });
     }
-});
-
-app.get('/battles/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await pool.query('SELECT * FROM battles WHERE id = $1', [id]);
-        if (result.rowCount === 0) {
-            res.status(404).json({ error: 'Battle not found' });
-        } else {
-            res.status(200).json(result.rows[0]);
-        }
-    } catch (error) {
-        console.error("Cannot get this battle", error);
-        res.status(500).json({ error: error.message });
-    }
-});
+}
+);
 
 app.delete('/battles/:id', async (req, res) => {
     const { id } = req.params;
