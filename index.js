@@ -171,7 +171,6 @@ const battle = async (villain1_id, villain2_id) => {
     const hp1 = villain1.rows[0].hp;
     const hp2 = villain2.rows[0].hp;
 
-    // atribua as condições que quiser para determinar o vencedor (se tiver mais dano ganha, menos vida perde e etc), aquele que vencer aumenta 1 nivel de level
     if (damage1 > damage2) {
         await pool.query('UPDATE villains SET level = $1 WHERE id = $2', [level1 + 1, villain1_id]);
         return villain1_id;
@@ -236,15 +235,10 @@ app.post('/battles', async (req, res) => {
 });
 
 
-// get the historic of the battles and the wins and losses of each villain
 app.get('/battles', async (req, res) => {
     try {
         const result = await pool.query(
-            `
-            SELECT battles.id, battles.villain1_id, battles.villain2_id, battles.winner_id, battles.loser_id, villains.name AS winner, villains2.name AS loser,
-            villains.level AS winner_level, villains2.level AS loser_level, villains.damage AS winner_damage, villains2.damage AS loser_damage, villains.hp AS winner_hp, villains2.hp AS loser_hp
-            FROM battles INNER JOIN villains ON battles.winner_id = villains.id INNER JOIN villains AS villains2 ON battles.loser_id = villains2.id
-            `
+            `SELECT battles.id, battles.villain1_id, battles.villain2_id, battles.winner_id, battles.loser_id, villains.name AS winner, villains2.name AS loser,villains.level AS winner_level, villains2.level AS loser_level, villains.damage AS winner_damage, villains2.damage AS loser_damage, villains.hp AS winner_hp, villains2.hp AS loser_hp FROM battles INNER JOIN villains ON battles.winner_id = villains.id INNER JOIN villains AS villains2 ON battles.loser_id = villains2.id`
         );
         res.status(200).json({
             total: result.rowCount,
@@ -273,10 +267,6 @@ app.delete('/battles/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-
-
-
 
 
 app.listen(port, () => {
