@@ -114,3 +114,21 @@ app.put('/villains/:id', async (req, res) => {
     }
 }
 );
+
+app.delete('/villains/:id', async (req, res) => {
+    const { id } = req.params;
+    const query = 'DELETE FROM villains WHERE id = $1';
+    const values = [id];
+    try {
+        const result = await pool.query(query, values);
+        if (result.rowCount === 0) {
+            res.status(404).json({ error: 'Villain not found' });
+        } else {
+            res.status(200).json({ message: 'Villain deleted successfully' });
+        }
+    } catch (error) {
+        console.error("Cannot delete this villain", error);
+        res.status(500).json({ error: error.message });
+    }
+}
+);
