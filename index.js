@@ -192,9 +192,7 @@ const battle = async (villain1_id, villain2_id) => {
         return villain2_id;
     } else if (damage1 === damage2 && hp1 === hp2 && level1 === level2) {
         console.error("Draw!");
-    } else {
-        return null;
-    }
+    } else if (vill)
 
 }
 
